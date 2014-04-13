@@ -287,7 +287,7 @@ void *calloc (size_t nmemb, size_t size) {
 /*
  * mm_checkheap - Check the heap for consistency
  */
-void mm_checkheap(int verbose)
+int mm_checkheap(int verbose)
 {
     if (verbose)
         printf("Check heap: \n");
@@ -335,6 +335,7 @@ void mm_checkheap(int verbose)
         printfreelist();
     }
     checkfreelist(free_block_count);
+    return 0;
 }
 
 
