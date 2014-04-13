@@ -461,7 +461,7 @@ inline void insert_free_block(void *bp){
     char *nextp = get_list_first(i);
     
     PUT_ADDR(bp, root);
-    PUT_ADDR(bp + WSIZE, nextp);
+    PUT_ADDR((char *)bp + WSIZE, nextp);
     PUT_ADDR(root + WSIZE, bp);
     if(nextp != (void*)1)
         PUT_ADDR(nextp, bp);
@@ -664,12 +664,12 @@ inline void check_freeblock(void* bp){
         
     /*All free list pointers point in the heap*/
     if( (in_heap(get_addr(bp)) != 1)   ||
-        ((in_heap(get_addr(bp + WSIZE)) != 1) && (GET(bp + WSIZE) != 1)) ){
+        ((in_heap(get_addr((char *)bp + WSIZE)) != 1) && (GET(bp + WSIZE) != 1)) ){
         fprintf(stderr,"checkheap: free list pointer not in the heap.\n");
         fprintf(stderr,"mem_heap_hi()=%p, mem_heap_lo()=%p, \n",
             mem_heap_hi(),mem_heap_lo());
         fprintf(stderr,"get_addr(bp)=%p, get_addr(bp + WSIZE)=%p, \n",
-            get_addr(bp),get_addr(bp + WSIZE));
+            get_addr(bp),get_addr((char *)bp + WSIZE));
     }
     
     /* next/previous pointers are consistent */
@@ -680,7 +680,7 @@ inline void check_freeblock(void* bp){
         fprintf(stderr, "pred's address=%p, bp's address=%p\n",
             prev_free_block(bp),bp);
     }
-    if(GET(bp + WSIZE) != 1 && prev_free_block(next_free_block(bp)) != bp)
+    if(GET((char *)bp + WSIZE) != 1 && prev_free_block(next_free_block(bp)) != bp)
         fprintf(stderr, "checkheap: succ: pred and succ doesn't match.\n");
 }
 
