@@ -69,7 +69,7 @@
 #define FOOTER_SIZE 8
 #define WSIZE 4 /* Word and header/footer size (bytes) */
 #define DSIZE 8 /* Doubleword size (bytes) */
-#define NUM_FREE_LISTS 25
+#define NUM_FREE_LISTS 24
 #define MAX_SIZE 0x3FFFFFFF
 
 /*
@@ -133,9 +133,9 @@ static inline void block_mark(uint32_t* block, int free) {
     REQUIRES(block != NULL);
     REQUIRES(in_heap(block));
 
-    unsigned int next = block_size(block) + 1;
+    //unsigned int next = block_size(block) + 1;
     block[0] = free ? block[0] & (int) 0xBFFFFFFF : block[0] | 0x40000000;
-    block[next] = block[0];
+    //block[next] = block[0];
 }
 
 // Return a pointer to the memory malloc should return
