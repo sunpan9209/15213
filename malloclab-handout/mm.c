@@ -106,8 +106,8 @@
 #define BROS(bp)       (void *)((char *)(bp) + TSIZE)
 
 /* Given block ptr bp, compute address of next and previous blocks */
-#define NEXT_BLKP(bp)  (void *)((char *)(bp) + GET_SIZE(HDRP(bp)))
-#define PREV_BLKP(bp)  (void *)((char *)(bp) - GET_SIZE((void *)((char *)HDRP(bp) - WSIZE)))
+#define NEXT_BLKP(bp) (void *)((char *)(bp) + GET_SIZE(HDRP(bp)))
+#define PREV_BLKP(bp) (void *)((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
 
 /* Given block ptr bp, compute address of next and previous free blocks */
 #define NEXT_FREEP(bp)(*(void **)((char *)(bp) + DSIZE))
