@@ -443,9 +443,10 @@ static void *coalesce(void *bp){
  *    list by pointers and see if they match
  *   -All blocks in each list bucket fall within bucket size range(segregated list)
  */
-void mm_checkheap(int verbose) {
+int mm_checkheap(int verbose) {
         check_heap(verbose);
         check_free_list();
+        return 0;
 }
 
 /*
