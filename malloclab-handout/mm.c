@@ -518,7 +518,7 @@ static int coalesce(void* block, size_t* size){
     REQUIRES(block != NULL);
     REQUIRES(in_heap(block));
 
-    uint64_t* left_block;
+    //uint64_t* left_block;
     void* right_block;
     size_t new_size;
     int index;
