@@ -100,7 +100,7 @@
 /* Given block ptr bp, compute address of its header and footer */
 #define HDRP(bp)       (void *)((char *)(bp) - WSIZE)
 #define FTRP(bp)       (void *)((char *)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
-#define LEFT(bp)       (void *)(bp)
+#define LEFT(bp)       ((void *)(bp))
 #define RIGHT(bp)      (void *)((char *)(bp) + WSIZE)
 #define PRNT(bp)       (void *)((char *)(bp) + DSIZE)
 #define BROS(bp)       (void *)((char *)(bp) + TSIZE)
@@ -108,8 +108,8 @@
 /* Given block ptr bp, compute address of other blocks */
 #define NEXT(bp) (void *)((char *)(bp) + GET_SIZE(HDRP(bp)))
 #define PREV(bp) (void *)((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
-#define NEXT_FREEP(bp) (void *)GET(PRNT(bp))
-#define PREV_FREEP(bp) (void *)GET(LEFT(bp))
+#define NEXT_FREEP(bp) (*(void **)((char *)(bp) + DSIZE))
+#define PREV_FREEP(bp) (*(void **)(bp))
 
 
 static char *heap_listp = 0; /* Pointer to the first block */
