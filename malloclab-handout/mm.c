@@ -567,7 +567,7 @@ inline int aligned(const void *p) {
 /*
  * mm_checkheap -  scans the heap and checks it for correctness
  */
-void mm_checkheap(int verbose) {
+int mm_checkheap(int verbose) {
     void *bp;
     int free_block_counter_1 = 0;
     int free_block_counter_2 = 0;
@@ -577,7 +577,7 @@ void mm_checkheap(int verbose) {
         fprintf(stderr, "checkheap: heap prologue block error\n");
     
     /*Check epilogue block*/
-    bp = mem_heap_hi() + 1 - WSIZE;
+    bp = (char *)mem_heap_hi() + 1 - WSIZE;
     if((GET_SIZE(bp) != 0) || (GET_ALLOC(bp) != 1)){
         fprintf(stderr, "checkheap: heap epilogue block error,");
         if(verbose) printblock(bp);
@@ -617,6 +617,7 @@ void mm_checkheap(int verbose) {
         fprintf(stderr, "counter_1=%d, counter_2=%d.\n",
             free_block_counter_1,free_block_counter_2);
     }
+    return 0;
 }
 
 /*
