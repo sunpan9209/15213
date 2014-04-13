@@ -61,12 +61,12 @@
 #define GET_ALLOC(p)            (GET(p) & 0x1)  /* the 1st bit indicates the alloc state of current block */
 
 /* Given block ptr bp, compute address of its header and footer */
-#define HDRP(bp)        ((char *)(bp) - WSIZE)
-#define FTRP(bp)        ((char *)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
+#define HDRP(bp)        (void *)((char *)(bp) - WSIZE)
+#define FTRP(bp)        (void *)((char *)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
 
 /* Given block ptr bp, compute address of next and previous blocks */
-#define NEXT_BLKP(bp)   ((char *)(bp) + GET_SIZE(((char *)(bp) - WSIZE)))
-#define PREV_BLKP(bp)   ((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
+#define NEXT_BLKP(bp)   (void *)((char *)(bp) + GET_SIZE(((char *)(bp) - WSIZE)))
+#define PREV_BLKP(bp)   (void *)((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
 
 /* Segregated Free Lists Definition */
 #define LIST_NUM 19
