@@ -105,13 +105,11 @@
 #define PRNT(bp)       (void *)((char *)(bp) + DSIZE)
 #define BROS(bp)       (void *)((char *)(bp) + TSIZE)
 
-/* Given block ptr bp, compute address of next and previous blocks */
-#define NEXT_BLKP(bp) (void *)((char *)(bp) + GET_SIZE(HDRP(bp)))
-#define PREV_BLKP(bp) (void *)((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
-
-/* Given block ptr bp, compute address of next and previous free blocks */
-#define NEXT_FREEP(bp)(*(void **)((char *)(bp) + DSIZE))
-#define PREV_FREEP(bp)(*(void **)(bp))
+/* Given block ptr bp, compute address of other blocks */
+#define NEXT(bp) (void *)((char *)(bp) + GET_SIZE(HDRP(bp)))
+#define PREV(bp) (void *)((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
+#define NEXT_FREEP(bp) (GET(PRNT(bp)))
+#define PREV_FREEP(bp) (GET(LEFT(bp)))
 
 
 static char *heap_listp = 0; /* Pointer to the first block */
@@ -282,8 +280,8 @@ void *mm_realloc(void *ptr, size_t size)
 			return ptr;
 		PUT(HDRP(ptr), PACK(size, 1));
 		PUT(FTRP(ptr), PACK(size, 1));
-		PUT(HDRP(NEXT_BLKP(ptr)), PACK(oldsize-size, 1));
-		free(NEXT_BLKP(ptr));
+		PUT(HDRP(NEXT(ptr)), PACK(oldsize-size, 1));
+		free(NEXT(ptr));
 		return ptr;
 	}
 
@@ -398,7 +396,7 @@ static void *extendHeap(size_t words)
 	/* Initialize free block header/footer and the epilogue header */
 	PUT(HDRP(bp), PACK(size, 0));         /* free block header */
 	PUT(FTRP(bp), PACK(size, 0));         /* free block footer */
-	PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1)); /* new epilogue header */
+	PUT(HDRP(NEXT(bp)), PACK(0, 1)); /* new epilogue header */
 
 	/* Coalesce if the previous block was free and add the block to 
 	 * the free list */
@@ -434,7 +432,7 @@ static void place(void *bp, size_t asize)
 		PUT(HDRP(bp), PACK(asize, 1));
 		PUT(FTRP(bp), PACK(asize, 1));
 		removeBlock(bp);
-		bp = NEXT_BLKP(bp);
+		bp = NEXT(bp);
 		PUT(HDRP(bp), PACK(csize-asize, 0));
 		PUT(FTRP(bp), PACK(csize-asize, 0));
 		coalesce(bp);
@@ -488,15 +486,15 @@ static void *findFit(size_t asize)
 static void *coalesce(void *bp)
 {
 	size_t prev_alloc;
-	prev_alloc = GET_ALLOC(FTRP(PREV_BLKP(bp))) || PREV_BLKP(bp) == bp;
-	size_t next_alloc = GET_ALLOC(HDRP(NEXT_BLKP(bp)));
+	prev_alloc = GET_ALLOC(FTRP(PREV(bp))) || PREV(bp) == bp;
+	size_t next_alloc = GET_ALLOC(HDRP(NEXT(bp)));
 	size_t size = GET_SIZE(HDRP(bp));
 
 	/* Case 1, extend the block leftward */
 	if (prev_alloc && !next_alloc) 
 	{			
-		size += GET_SIZE(HDRP(NEXT_BLKP(bp)));
-		removeBlock(NEXT_BLKP(bp));
+		size += GET_SIZE(HDRP(NEXT(bp)));
+		removeBlock(NEXT(bp));
 		PUT(HDRP(bp), PACK(size, 0));
 		PUT(FTRP(bp), PACK(size, 0));
 	}
@@ -504,8 +502,8 @@ static void *coalesce(void *bp)
 	/* Case 2, extend the block rightward */
 	else if (!prev_alloc && next_alloc) 
 	{		
-		size += GET_SIZE(HDRP(PREV_BLKP(bp)));
-		bp = PREV_BLKP(bp);
+		size += GET_SIZE(HDRP(PREV(bp)));
+		bp = PREV(bp);
 		removeBlock(bp);
 		PUT(HDRP(bp), PACK(size, 0));
 		PUT(FTRP(bp), PACK(size, 0));
@@ -514,11 +512,11 @@ static void *coalesce(void *bp)
 	/* Case 3, extend the block in both directions */
 	else if (!prev_alloc && !next_alloc) 
 	{		
-		size += GET_SIZE(HDRP(PREV_BLKP(bp))) + 
-				GET_SIZE(HDRP(NEXT_BLKP(bp)));
-		removeBlock(PREV_BLKP(bp));
-		removeBlock(NEXT_BLKP(bp));
-		bp = PREV_BLKP(bp);
+		size += GET_SIZE(HDRP(PREV(bp))) + 
+				GET_SIZE(HDRP(NEXT(bp)));
+		removeBlock(PREV(bp));
+		removeBlock(NEXT(bp));
+		bp = PREV(bp);
 		PUT(HDRP(bp), PACK(size, 0));
 		PUT(FTRP(bp), PACK(size, 0));
 	}
