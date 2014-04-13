@@ -46,7 +46,7 @@
 /* Basic constants and macros */
 #define WSIZE           4               /* Word and header/footer size (bytes) */
 #define DSIZE           8               /* Doubleword size (bytes) */
-#define CHUNKSIZE       64     /* Extend heap by this amount (bytes) */
+#define CHUNKSIZE       256     /* Extend heap by this amount (bytes) */
 
 #define MAX(x, y)       ((x) > (y)? (x) : (y))
 #define MIN(x, y)       ((x) < (y)? (x) : (y))
@@ -71,7 +71,7 @@
 #define PREV_BLKP(bp)   (void *)((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
 
 /* Segregated Free Lists Definition */
-#define LIST_NUM 11
+#define LIST_NUM 13
 #define MIN_BLOCK_SIZE  24
 #define GET_PREVP(bp)           (*(void **)bp)
 #define PUT_PREVP(bp, ptr)      (GET_PREVP(bp) = ptr)
