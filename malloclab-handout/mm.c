@@ -534,12 +534,12 @@ static int coalesce(void* block, size_t* size){
 
     right_block = ((uint64_t*)block)+(block_size(block)/sizeof(uint64_t*));
 
-    if(in_heap(left_block) && block_free(left_block)){
-        if(block_size(left_block) == size){
-            set_size(left_block, size*2);
-            add_block_to_list(get_free_list_index(size*2), left_block);
-        }
-    }
+    // if(in_heap(left_block) && block_free(left_block)){
+    //     if(block_size(left_block) == size){
+    //         set_size(left_block, size*2);
+    //         add_block_to_list(get_free_list_index(size*2), left_block);
+    //     }
+    // }
     
     if(in_heap(right_block) && block_free((uint32_t*)right_block)){
         if(block_size(right_block) == new_size/2){
