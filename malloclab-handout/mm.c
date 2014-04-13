@@ -46,7 +46,7 @@
 /* Basic constants and macros */
 #define WSIZE           4               /* Word and header/footer size (bytes) */
 #define DSIZE           8               /* Doubleword size (bytes) */
-#define CHUNKSIZE       256     /* Extend heap by this amount (bytes) */
+#define CHUNKSIZE       200     /* Extend heap by this amount (bytes) */
 
 #define MAX(x, y)       ((x) > (y)? (x) : (y))
 #define MIN(x, y)       ((x) < (y)? (x) : (y))
@@ -71,7 +71,7 @@
 #define PREV_BLKP(bp)   (void *)((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
 
 /* Segregated Free Lists Definition */
-#define LIST_NUM 13
+#define LIST_NUM 19
 #define MIN_BLOCK_SIZE  24
 #define GET_PREVP(bp)           (*(void **)bp)
 #define PUT_PREVP(bp, ptr)      (GET_PREVP(bp) = ptr)
@@ -119,7 +119,7 @@ int mm_init(void) {
     *((uint32_t *)heap_start + 2) = DSIZE|1; /* prologue footer */ 
     *((uint32_t *)heap_start + 3) = 0|1; /* epilogue header */
     heap_start += DSIZE;
-    if (extend_heap(CHUNKSIZE/WSIZE) == NULL)
+    if(extend_heap(CHUNKSIZE/WSIZE) == NULL)
         return -1;
     return 0;
 }
