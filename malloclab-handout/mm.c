@@ -664,7 +664,7 @@ inline void check_freeblock(void* bp){
         
     /*All free list pointers point in the heap*/
     if( (in_heap(get_addr(bp)) != 1)   ||
-        ((in_heap(get_addr((char *)bp + WSIZE)) != 1) && (GET(bp + WSIZE) != 1)) ){
+        ((in_heap(get_addr((char *)bp + WSIZE)) != 1) && (GET((char *)bp + WSIZE) != 1)) ){
         fprintf(stderr,"checkheap: free list pointer not in the heap.\n");
         fprintf(stderr,"mem_heap_hi()=%p, mem_heap_lo()=%p, \n",
             mem_heap_hi(),mem_heap_lo());
