@@ -73,7 +73,7 @@
 #define MIN_BLOCK_SIZE  24
 #define GET_PREVP(bp)           (*(void **)bp)
 #define PUT_PREVP(bp, ptr)      (GET_PREVP(bp) = ptr)
-#define GET_NEXTP(bp)           (*(void **)(bp + DSIZE))
+#define GET_NEXTP(bp)           (*(void **)((char *)bp + DSIZE))
 #define PUT_NEXTP(bp, ptr)      (GET_NEXTP(bp) = ptr)
 #define GET_SEGI(lp, i) (*(void **)(lp + (i*DSIZE)))
 #define PUT_SEGI(lp, i, ptr)    ((GET_SEGI(lp, i)) = ptr)
