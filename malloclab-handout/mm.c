@@ -131,9 +131,9 @@ static inline void block_mark(uint32_t* block, int free) {
     REQUIRES(block != NULL);
     REQUIRES(in_heap(block));
 
-    unsigned int next = block_size(block) + 1;
+    //unsigned int next = block_size(block) + 1;
     block[0] = free ? block[0] & (int) 0xBFFFFFFF : block[0] | 0x40000000;
-    block[next] = block[0];
+    //block[next] = block[0];
 }
 
 // Return a pointer to the memory malloc should return
@@ -194,7 +194,7 @@ static inline void* block_from_ptr(uint64_t* ptr){
 static int get_free_list_index(size_t size);
 static void* find_free_block(int index, size_t size);
 static void* allocate_block(size_t size);
-static void* split_block(int index);
+//static void* split_block(int index);
 static void remove_block_from_list(int index, void* block);
 static void add_block_to_list(int index, void* block);
 static int coalesce(void* block, size_t* size);
@@ -279,8 +279,8 @@ void free (void *ptr) {
     index = coalesce(block, &size);
 
     block_mark(block, 1);
-    set_prev_pointer(block, NULL);
-    set_next_pointer(block, NULL);
+    //set_prev_pointer(block, NULL);
+    //set_next_pointer(block, NULL);
 
     add_block_to_list(index, block);
 
@@ -344,12 +344,12 @@ void* calloc (size_t nmemb, size_t size) {
 // Returns 0 if no errors were found, otherwise returns the error
 int mm_checkheap(int verbose) {
     void* current;
-    void* prev;
+    //void* prev;
     size_t size;
 
     for(int i = 0; i < NUM_FREE_LISTS; i++){
         current = free_lists[i];
-        prev = NULL;
+        //prev = NULL;
 
         while(current != NULL){
             if(!in_heap(current)){
@@ -363,12 +363,12 @@ int mm_checkheap(int verbose) {
                 if(verbose) printf("HEAP ERROR: invalid block size\n");
                 return 1;
             }
-            
+            /*
             if(block_prev(current) != prev){
                 if(verbose) printf("HEAP ERROR: invalid prev pointer\n");
                 return 1;
             }
-            
+            */
             if(!block_free(current)){
                 if(verbose) printf("HEAP ERROR: block in list not marked free\n");
                 return 1;
@@ -378,7 +378,7 @@ int mm_checkheap(int verbose) {
             	if(verbose) printf("HEAP ERROR: block not aligned\n");
             	return 1;
             }
-            prev = current;
+            //prev = current;
             current = block_next(current);
         }
     }
@@ -421,11 +421,11 @@ static void* find_free_block(int index, size_t size){
 
     	while(current != NULL){
     		if(block_size(current) >= size){
-    			 if(new_index > index){
-    			 	block = split_block(new_index);
-    			 	block_mark(block, 0);
-    			 	return block;
-    			 }
+    			// if(new_index > index){
+    			// 	block = split_block(new_index);
+    			// 	block_mark(block, 0);
+    			// 	return block;
+    			// }
     			block = current;
     			block_mark(block, 0);
     			remove_block_from_list(new_index, block);
@@ -474,31 +474,31 @@ static void add_block_to_list(int index, void* block){
 // moves split piece to correct free list
 // returns a pointer to the block that was split
 
-static void* split_block(int index){
-    REQUIRES(0 <= index && index < NUM_FREE_LISTS);
+// static void* split_block(int index){
+//     REQUIRES(0 <= index && index < NUM_FREE_LISTS);
 
-    size_t new_size;
-    uint64_t* new_block;
-    uint64_t* block;
-    int new_index;
+//     size_t new_size;
+//     uint64_t* new_block;
+//     uint64_t* block;
+//     int new_index;
 
-    block = free_lists[index];
-    remove_block_from_list(index, block);
+//     block = free_lists[index];
+//     remove_block_from_list(index, block);
 
-    new_size = block_size(block)/2;
-    new_block = block + (new_size/sizeof(uint64_t*));
+//     new_size = block_size(block)/2;
+//     new_block = block + (new_size/sizeof(uint64_t*));
 
-    set_size((uint32_t*)block, new_size);
-    set_size((uint32_t*)new_block, new_size);
+//     set_size((uint32_t*)block, new_size);
+//     set_size((uint32_t*)new_block, new_size);
 
-    new_index = get_free_list_index(new_size);
-    add_block_to_list(new_index, new_block);
+//     new_index = get_free_list_index(new_size);
+//     add_block_to_list(new_index, new_block);
 
-    set_prev_pointer(block, NULL);
-    set_next_pointer(block, NULL);
+//     set_prev_pointer(block, NULL);
+//     set_next_pointer(block, NULL);
 
-    return block;
-}
+//     return block;
+// }
 
 static void* allocate_block(size_t size){
     void* block;
