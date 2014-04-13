@@ -108,8 +108,8 @@
 /* Given block ptr bp, compute address of other blocks */
 #define NEXT(bp) (void *)((char *)(bp) + GET_SIZE(HDRP(bp)))
 #define PREV(bp) (void *)((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
-#define NEXT_FREEP(bp) (*(void **)((char *)(bp) + DSIZE))
-#define PREV_FREEP(bp) (*(void **)(bp))
+#define NEXT_FREEP(bp) ((void **)((char *)(bp) + DSIZE))
+#define PREV_FREEP(bp) ((void **)(bp))
 
 
 static char *heap_listp = 0; /* Pointer to the first block */
