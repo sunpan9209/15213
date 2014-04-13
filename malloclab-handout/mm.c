@@ -31,10 +31,10 @@
 
 
 /* Basic constants and macros */
-#define WSIZE       4       /* word size (bytes) */
-#define DSIZE       8       /* doubleword size (bytes) */
-#define CHUNKSIZE  (1<<12)  /* initial heap size (bytes) */
-#define OVERHEAD    16      /* overhead of header and footer (bytes) */
+#define WSIZE       8       /* word size (bytes) */
+#define DSIZE       16       /* doubleword size (bytes) */
+#define CHUNKSIZE  (1<<8)  /* initial heap size (bytes) */
+#define OVERHEAD    32      /* overhead of header and footer (bytes) */
 
 #define MAX(x, y) ((x) > (y)? (x) : (y))
 
@@ -64,14 +64,14 @@
 #define PREV_BLKP(bp)  ((char *)(bp) - GET_SIZE(((char *)(bp) - DSIZE)))
 
 /* single word (8) or double word (16) alignment */
-#define ALIGNMENT 8
+#define ALIGNMENT 16
 
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(p) (((size_t)(p) + (ALIGNMENT-1)) & ~0x7)
 
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
-#define MIN_BLKSIZE 16
+#define MIN_BLKSIZE 32
 
 /* class no: 0 - NUM_FREELIST-1 */
 #define NUM_FREELIST 10
@@ -346,7 +346,7 @@ int mm_checkheap(int verbose)
  */
 inline int getclass(size_t size)
 {
-    int block = size / DSIZE;
+    int block = size / WSIZE;
 
     if (block <= 4) {
         return 0;
