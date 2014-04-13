@@ -119,29 +119,29 @@ char *heap_listp;   /*pointer to the beginning of the heap*/
 char *free_listp;   /*pointer to the beginning of the explicit free list*/
 char *base_addr;    /*base address of the heap (base + offset = real addr)*/
 
-inline void *find_fit(size_t asize);
-inline void place(void *bp, size_t asize); 
-inline void *coalesce(void *bp);
-inline void *extend_heap(size_t words);
+static void *find_fit(size_t asize);
+static void place(void *bp, size_t asize); 
+static void *coalesce(void *bp);
+static void *extend_heap(size_t words);
 
-inline void *offset2addr(int offset);
-inline void *next_free_block(void *bp);
-inline void *prev_free_block(void *bp);
+static void *offset2addr(int offset);
+static void *next_free_block(void *bp);
+static void *prev_free_block(void *bp);
 
-inline void delete_free_block(void *bp);
-inline void insert_free_block(void *bp); 
-inline int find_free_list_no(size_t size);
-inline void *get_list_root(int i);
-inline void *get_list_first(int i);
+static void delete_free_block(void *bp);
+static void insert_free_block(void *bp); 
+static int find_free_list_no(size_t size);
+static void *get_list_root(int i);
+static void *get_list_first(int i);
 
-inline int in_heap(const void *p);
-inline int aligned(const void *p);
+static int in_heap(const void *p);
+static int aligned(const void *p);
 int mm_checkheap(int verbose);
-inline int check_freelist(int list_no);
-inline void check_freeblock(void* bp);
-inline void check_block(void* bp);
-inline void check_heapboundaries(void *heapstart, void *heapend);
-inline void printblock(void *bp);
+static int check_freelist(int list_no);
+static void check_freeblock(void* bp);
+static void check_block(void* bp);
+static void check_heapboundaries(void *heapstart, void *heapend);
+static void printblock(void *bp);
 
 /*
  * Initialize: return -1 on error, 0 on success.
@@ -295,7 +295,7 @@ void *calloc (size_t nmemb, size_t size) {
  * find_fit - Search in the free block list to find a block
  * that is large enough for the malloc size
  */
-inline void *find_fit(size_t asize){
+static void *find_fit(size_t asize){
     /* First fit search */
     void *bp;
     int free_list_no = find_free_list_no(asize);
@@ -319,7 +319,7 @@ inline void *find_fit(size_t asize){
 /*
  * place - place a block of 'asize' at address bp
  */
-inline void place(void *bp, size_t asize){  
+static void place(void *bp, size_t asize){  
     size_t csize = GET_SIZE(HDRP(bp));
     int is_realloc = GET_ALLOC(HDRP(bp));
     
@@ -351,7 +351,7 @@ inline void place(void *bp, size_t asize){
 /*
  * extend_heap- Extend the heap with a new free block
  */
-inline void *extend_heap(size_t words){
+static void *extend_heap(size_t words){
     char *bp;
     size_t size;
     
@@ -395,7 +395,7 @@ void free (void *bp) {
  * coalesce - coalesce free blocks nearby and make them a 
  * larger free block
  */
-inline void *coalesce(void *bp){
+static void *coalesce(void *bp){
     size_t prev_alloc = GET_ALLOC(FTRP(PREV_BLKP(bp)));
     size_t next_alloc = GET_ALLOC(HDRP(NEXT_BLKP(bp)));
     size_t size = GET_SIZE(HDRP(bp));
@@ -438,7 +438,7 @@ inline void *coalesce(void *bp){
  * Delete free block
  * Delete one free block from the free list
  */
-inline void delete_free_block(void *bp ){
+static void delete_free_block(void *bp ){
     char *prevp = prev_free_block(bp);
     char *nextp = next_free_block(bp);
     
@@ -455,7 +455,7 @@ inline void delete_free_block(void *bp ){
  * Insert free block (LIFO)
  * Insert one free block to the root point of an appropriate free list
  */
-inline void insert_free_block(void *bp){
+static void insert_free_block(void *bp){
     int i = find_free_list_no(GET_SIZE(HDRP(bp)));
     char *root = get_list_root(i);
     char *nextp = get_list_first(i);
@@ -473,7 +473,7 @@ inline void insert_free_block(void *bp){
 /*
  * find_free_list_no - given sieze, compute free_list_no
  */
-inline int find_free_list_no(size_t size){
+static int find_free_list_no(size_t size){
     int block = size / DSIZE;
     if (block <= 4) 
         return 0;
@@ -499,13 +499,13 @@ inline int find_free_list_no(size_t size){
 /*
  * get_list_root - Get root node for list i
  */
-inline void *get_list_root(int i){
+static void *get_list_root(int i){
     return free_listp + i*DSIZE;
 }
 /*
  * get_list_first - Get the first node for list i
  */
-inline void *get_list_first(int i){
+static void *get_list_first(int i){
     void * root = get_list_root(i);
     return next_free_block(root);
 }
@@ -515,7 +515,7 @@ inline void *get_list_first(int i){
 /*
  * offset2addr - restore the offset to address
  */
-inline void *offset2addr(int offset){
+static void *offset2addr(int offset){
     if (offset != 1) 
         return (void *)((long int)offset | (long int)base_addr);
     else 
@@ -525,7 +525,7 @@ inline void *offset2addr(int offset){
 /*
  * next_free_block - Given block bp, get next free block
  */
-inline void *next_free_block(void *bp){
+static void *next_free_block(void *bp){
     int offset = *NEXT_F_BLKP(bp);
     return offset2addr(offset);
 }
@@ -533,7 +533,7 @@ inline void *next_free_block(void *bp){
 /*
  * prev_free_blck - Given block bp, get previous block
  */
-inline void *prev_free_block(void *bp){
+static void *prev_free_block(void *bp){
     int offset = *PREV_F_BLKP(bp);
     return offset2addr(offset);
 }
@@ -541,7 +541,7 @@ inline void *prev_free_block(void *bp){
 /*
  * get_addr - Get the address stored in address bp
  */
-inline void *get_addr(void *bp){
+static void *get_addr(void *bp){
     int offset = GET(bp);
     return offset2addr(offset);
 }
@@ -552,7 +552,7 @@ inline void *get_addr(void *bp){
  * Return whether the pointer is in the heap.
  * May be useful for debugging.
  */
-inline int in_heap(const void *p) {
+static int in_heap(const void *p) {
     return p <= mem_heap_hi() && p >= mem_heap_lo();
 }
 
@@ -560,7 +560,7 @@ inline int in_heap(const void *p) {
  * Return whether the pointer is aligned.
  * May be useful for debugging.
  */
-inline int aligned(const void *p) {
+static int aligned(const void *p) {
     return (size_t)ALIGN(p) == (size_t)p;
 }
 
@@ -624,7 +624,7 @@ int mm_checkheap(int verbose) {
  * check_block - check each block's address alignment, header and footer,
  * and if it is in the heap.
  */
-inline void check_block(void* bp){
+static void check_block(void* bp){
     /*Check point in the heap */
     if(in_heap(bp) != 1)    
         fprintf(stderr, "checkheap: pointer is not in the heap\n");
@@ -647,7 +647,7 @@ inline void check_block(void* bp){
  * check_freeblock - check content of each free block:
  * coalescing, pointers point in the heap, pointers consistency
  */
-inline void check_freeblock(void* bp){
+static void check_freeblock(void* bp){
     /*Check coalescing*/
     if(GET_ALLOC(HDRP(PREV_BLKP(bp)))==0||GET_ALLOC(HDRP(NEXT_BLKP(bp)))==0){
         fprintf(stderr, "checkheap: two consecutive free blocks.\n");
@@ -688,7 +688,7 @@ inline void check_freeblock(void* bp){
  * check_freelist - check each free list:
  * count free blocks, block size correctness
  */
-inline int check_freelist(int i){
+static int check_freelist(int i){
     /*Check each free list*/
     char * bp;
     int block_counter = 0;
@@ -733,7 +733,7 @@ inline int check_freelist(int i){
 /*
  * check_heapboundaries - check if heap boundaries matches head and end blocks
  */
-inline void check_heapboundaries(void *heapstart , void *heapend){
+static void check_heapboundaries(void *heapstart , void *heapend){
     if(heapstart != mem_heap_lo()){
         printf("Error: heap start point %p not equaled to low boundary %p\n",
             heapstart, mem_heap_lo());
@@ -747,7 +747,7 @@ inline void check_heapboundaries(void *heapstart , void *heapend){
 /*
  * printblock - print address, size and alloc of a block
  */
-inline void printblock(void *bp){
+static void printblock(void *bp){
     printf("bp=%p,h_a=%d, f_a=%d, h_s=%d, f_s=%d. \n",bp,GET_ALLOC(HDRP(bp)),
         GET_ALLOC(FTRP(bp)),GET_SIZE(HDRP(bp)),GET_SIZE(FTRP(bp)));
     if(GET_ALLOC(HDRP(bp)) == 0)
